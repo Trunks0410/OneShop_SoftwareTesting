@@ -1,0 +1,130 @@
+// src/main/java/com/oneshop/entity/Order.java
+package com.oneshop.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "ORDERS")
+@Getter 
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"orderDetails", "user", "shop", "shipper", "promotion", "shippingCompany"})
+@ToString(exclude = {"orderDetails", "user", "shop", "shipper", "promotion", "shippingCompany"})
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; 
+
+    @Column(name = "recipient_name", nullable = false, columnDefinition = "nvarchar(255)")
+    private String recipientName;
+
+    @Column(name = "shipping_phone", nullable = false, length = 20)
+    private String shippingPhone;
+
+    @Column(name = "shipping_address", nullable = false, columnDefinition = "nvarchar(500)")
+    private String shippingAddress; 
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false, length=50)
+    private OrderStatus orderStatus; 
+
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal subtotal;
+
+    @Column(name = "shipping_cost", precision = 19, scale = 2)
+    private BigDecimal shippingCost;
+    
+    @Column(name = "discount_amount", precision = 19, scale = 2)
+    private BigDecimal discountAmount;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id") 
+    private Promotion promotion; 
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_company_id") 
+    private ShippingCompany shippingCompany;
+
+    @Column(name = "total_amount", nullable = false, precision = 19, scale = 2)
+    private BigDecimal total;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipper_id") 
+    private User shipper; 
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderDetail> orderDetails = new ArrayList<>(); 
+
+    @Column(name = "shipper_delivered", nullable = false)
+    private Boolean shipperDelivered = false;
+
+    @Column(name = "shipper_delivered_at")
+    private LocalDateTime shipperDeliveredAt;
+
+    @Column(name = "return_reason", columnDefinition = "nvarchar(500)")
+    private String returnReason;
+
+    @Column(name = "return_evidence", columnDefinition = "nvarchar(500)")
+    private String returnEvidence;
+
+    public boolean isReturnPossible() {
+        if (this.shipperDeliveredAt == null) {
+            return false;
+        }
+        return LocalDateTime.now().isBefore(this.shipperDeliveredAt.plusDays(7));
+    }
+
+    public long getDaysLeftToReturn() {
+        if (this.shipperDeliveredAt == null) {
+            return 0;
+        }
+        long days = java.time.temporal.ChronoUnit.DAYS.between(LocalDateTime.now(), this.shipperDeliveredAt.plusDays(7));
+        return Math.max(0, days);
+    }
+
+    public boolean isAutoConfirmed() {
+        if (this.orderStatus == OrderStatus.DELIVERED && this.shipperDeliveredAt != null) {
+            // Checked if 5 days have passed since shipper delivery
+            return this.shipperDeliveredAt.plusDays(5).isBefore(LocalDateTime.now()) || this.shipperDeliveredAt.plusDays(5).isEqual(LocalDateTime.now());
+        }
+        return false;
+    }
+
+    public void recalculateTotal() {
+        BigDecimal calculatedTotal = BigDecimal.ZERO;
+        if (this.subtotal != null) {
+            calculatedTotal = calculatedTotal.add(this.subtotal);
+        }
+        if (this.shippingCost != null) {
+            calculatedTotal = calculatedTotal.add(this.shippingCost);
+        }
+        if (this.discountAmount != null) {
+            calculatedTotal = calculatedTotal.subtract(this.discountAmount);
+        }
+        this.total = calculatedTotal.max(BigDecimal.ZERO);
+    }
+}

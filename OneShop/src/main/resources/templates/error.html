@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/guest}">
+<head>
+    <title>Đã xảy ra lỗi - OneShop</title>
+    <th:block layout:fragment="css">
+        <style>
+            .error-section {
+                padding: 80px 0;
+                background: linear-gradient(180deg, #fdfbfe 0%, #f7f3fa 100%);
+                min-height: calc(100vh - 400px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .error-card {
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                border-radius: 16px;
+                padding: 60px 40px;
+                box-shadow: 0 15px 35px rgba(158, 91, 171, 0.08);
+                text-align: center;
+                max-width: 650px;
+                width: 100%;
+                position: relative;
+                overflow: hidden;
+                margin: 0 auto;
+            }
+            .error-card::before {
+                content: '';
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 150px;
+                height: 150px;
+                background: radial-gradient(circle, rgba(158, 91, 171, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+                border-radius: 50%;
+                z-index: 0;
+            }
+            .error-card::after {
+                content: '';
+                position: absolute;
+                bottom: -50px;
+                left: -50px;
+                width: 150px;
+                height: 150px;
+                background: radial-gradient(circle, rgba(210, 110, 75, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+                border-radius: 50%;
+                z-index: 0;
+            }
+            .error-content {
+                position: relative;
+                z-index: 1;
+            }
+            .error-illustration {
+                position: relative;
+                height: 150px;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .animated-icon {
+                font-size: 90px;
+                background: linear-gradient(135deg, #9e5bab, #d26e4b);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: float 4s ease-in-out infinite;
+            }
+            .error-badge {
+                position: absolute;
+                bottom: 5px;
+                right: 28%;
+                background: #d26e4b;
+                color: #fff;
+                font-size: 1.2rem;
+                font-weight: 700;
+                padding: 5px 12px;
+                border-radius: 20px;
+                box-shadow: 0 4px 10px rgba(210, 110, 75, 0.3);
+                transform: rotate(-10deg);
+                animation: pulse 2s infinite;
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-15px) rotate(5deg); }
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1) rotate(-10deg); }
+                50% { transform: scale(1.08) rotate(-10deg); }
+            }
+            .error-title {
+                font-size: 2.6rem;
+                font-weight: 700;
+                color: #222;
+                margin-bottom: 15px;
+                font-family: 'Roboto Slab', serif;
+            }
+            .error-desc {
+                font-size: 1.5rem;
+                color: #555;
+                margin-bottom: 20px;
+                line-height: 1.6;
+            }
+            .error-details {
+                font-family: monospace;
+                font-size: 1.2rem;
+                background-color: #fcf8fd;
+                border: 1px dashed rgba(158, 91, 171, 0.3);
+                padding: 15px;
+                border-radius: 6px;
+                text-align: left;
+                margin-bottom: 35px;
+                color: #555;
+                word-break: break-all;
+            }
+            .error-actions {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .btn-error {
+                padding: 12px 30px;
+                font-size: 1.4rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                border-radius: 30px;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            }
+            .btn-error-primary {
+                background: linear-gradient(135deg, #9e5bab, #d26e4b);
+                color: #fff !important;
+                border: none;
+                box-shadow: 0 6px 20px rgba(158, 91, 171, 0.3);
+            }
+            .btn-error-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(158, 91, 171, 0.45);
+            }
+            .btn-error-secondary {
+                background: #fff;
+                color: #9e5bab !important;
+                border: 2px solid #9e5bab;
+            }
+            .btn-error-secondary:hover {
+                background: #fdfafd;
+                transform: translateY(-3px);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="error-section">
+        <div class="error-card">
+            <div class="error-content">
+                <div class="error-illustration">
+                    <i class="fas fa-exclamation-triangle animated-icon"></i>
+                    <span class="error-badge" style="background: #e0a800;" th:text="${status} ?: 'Error'">Error</span>
+                </div>
+                <h2 class="error-title" th:text="${error} ?: 'Yêu cầu gặp sự cố'">Đã xảy ra lỗi</h2>
+                <p class="error-desc" th:text="${message} ?: 'Hệ thống gặp sự cố ngoài ý muốn khi xử lý yêu cầu của bạn. Vui lòng thử lại sau.'">
+                    Đã có lỗi xảy ra trên hệ thống của chúng tôi.
+                </p>
+                <div th:if="${message != null}" class="error-details">
+                    <i class="fas fa-bug text-danger" style="margin-right: 5px;"></i>
+                    <strong>Chi tiết lỗi:</strong> <span th:text="${message}">N/A</span>
+                </div>
+                <div class="error-actions">
+                    <a th:href="@{/}" class="btn-error btn-error-primary">
+                        <i class="fas fa-home"></i> Quay lại Trang chủ
+                    </a>
+                    <a th:href="@{/products}" class="btn-error btn-error-secondary">
+                        <i class="fas fa-shopping-bag"></i> Khám phá sản phẩm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
