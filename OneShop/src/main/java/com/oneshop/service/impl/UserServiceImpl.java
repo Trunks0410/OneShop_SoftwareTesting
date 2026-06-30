@@ -49,9 +49,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void register(User user, RoleName roleNameEnum) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent() || userRepository.findByEmail(user.getEmail()).isPresent()) {
-            logger.warn("Email hoặc username đã tồn tại: {} / {}", user.getEmail(), user.getUsername());
-            throw new IllegalArgumentException("Email hoặc username đã tồn tại!");
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            logger.warn("Username đã tồn tại: {}", user.getUsername());
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại!");
+        }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            logger.warn("Email đã tồn tại: {}", user.getEmail());
+            throw new IllegalArgumentException("Email đã tồn tại!");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleRepository.findByName(roleNameEnum)

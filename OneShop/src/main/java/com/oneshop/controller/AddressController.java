@@ -48,7 +48,7 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Address> updateAddress(@PathVariable Long id, 
+    public ResponseEntity<?> updateAddress(@PathVariable Long id, 
                                                  @RequestBody Address address, 
                                                  Principal principal) { // <-- 1. Thêm Principal vào tham số
         
