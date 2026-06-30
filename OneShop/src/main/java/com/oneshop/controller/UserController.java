@@ -99,15 +99,13 @@ public class UserController {
     @PostMapping("/addresses/delete/{id}")
     public String deleteAddress(@PathVariable Long id, @AuthenticationPrincipal User currentUser, RedirectAttributes redirectAttributes) {
          logger.warn("Attempting to delete address {} for user {}", id, currentUser.getUsername());
-         // *** Cần thêm phương thức delete trong AddressService ***
-         // try {
-         //     addressService.deleteAddress(id, currentUser.getUsername());
-         //     redirectAttributes.addFlashAttribute("successMessage", "Xóa địa chỉ thành công!");
-         // } catch (Exception e) {
-         //     logger.error("Error deleting address {} for user {}: {}", id, currentUser.getUsername(), e.getMessage(), e);
-         //     redirectAttributes.addFlashAttribute("errorMessage", "Xóa địa chỉ thất bại: " + e.getMessage());
-         // }
-         redirectAttributes.addFlashAttribute("errorMessage", "Chức năng xóa địa chỉ chưa được triển khai."); // Tạm thời
+         try {
+             addressService.deleteAddress(id, currentUser.getUsername());
+             redirectAttributes.addFlashAttribute("successMessage", "Xóa địa chỉ thành công!");
+         } catch (Exception e) {
+             logger.error("Error deleting address {} for user {}: {}", id, currentUser.getUsername(), e.getMessage(), e);
+             redirectAttributes.addFlashAttribute("errorMessage", "Xóa địa chỉ thất bại: " + e.getMessage());
+         }
         return "redirect:/user/addresses";
     }
 

@@ -108,6 +108,11 @@ public class VendorController {
             model.addAttribute("newOrderCount", newOrderCount);
             model.addAttribute("totalProductCount", totalProductCount);
             model.addAttribute("monthlyRevenue", currentMonthRevenue);
+
+            Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+            Page<Order> recentOrdersPage = orderService.getOrdersByShop(shopId, Optional.empty(), pageable);
+            model.addAttribute("recentOrders", recentOrdersPage.getContent());
+
             logger.debug("Dashboard data for shopId {}: newOrders={}, totalProducts={}, monthlyRevenue={}",
                 shopId, newOrderCount, totalProductCount, currentMonthRevenue);
 

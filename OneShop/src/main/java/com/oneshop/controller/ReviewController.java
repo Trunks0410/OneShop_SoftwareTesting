@@ -96,7 +96,7 @@ public class ReviewController {
     @PostMapping("/user/orders/{orderId}/review/{productId}")
     public String submitReview(@PathVariable Long orderId,
                               @PathVariable Long productId,
-                              @RequestParam Integer rating, 
+                              @RequestParam(required = false) Integer rating, 
                               @RequestParam(required = false, defaultValue = "") String comment, 
                               @RequestParam(value = "mediaFiles", required = false) List<MultipartFile> mediaFiles, // <<< THÊM: Nhận file
                               @AuthenticationPrincipal User user, 

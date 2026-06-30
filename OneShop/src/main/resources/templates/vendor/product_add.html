@@ -243,10 +243,7 @@ label {
 						</label> <small class="form-text text-muted d-block mb-2">Nhập
 							thông tin cho từng loại (ví dụ: màu sắc, kích thước). Mỗi loại có
 							thể có ảnh riêng.</small>
-						<div class="text-danger mt-1 mb-2 small"
-							th:if="${#fields.hasErrors('variants') and not #strings.contains(#fields.errors('variants')[0], '[')}">
-							<span th:errors="*{variants}"></span>
-						</div>
+
 
 
 						<div id="variants-container">

@@ -108,9 +108,22 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td colspan="6" class="text-center">Chưa có đơn hàng nào
-									gần đây.</td>
+							<tr th:if="${recentOrders == null or recentOrders.empty}">
+								<td colspan="6" class="text-center">Chưa có đơn hàng nào gần đây.</td>
+							</tr>
+							<tr th:each="order : ${recentOrders}">
+								<td th:text="'#' + ${order.id}">#123</td>
+								<td th:text="${order.user.username}">Khách hàng</td>
+								<td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+								<td th:text="${#numbers.formatCurrency(order.total)}">0đ</td>
+								<td>
+									<span class="badge" 
+										  th:classappend="${order.orderStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : (${order.orderStatus.name() == 'DELIVERED'} ? 'bg-success' : 'bg-secondary')" 
+										  th:text="${order.orderStatus.getDisplayName()}">Trạng thái</span>
+								</td>
+								<td>
+									<a th:href="@{'/vendor/orders/details/' + ${order.id}}" class="btn btn-sm btn-info text-white"><i class="fas fa-eye"></i></a>
+								</td>
 							</tr>
 						</tbody>
 					</table>

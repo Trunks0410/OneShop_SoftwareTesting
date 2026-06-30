@@ -44,6 +44,15 @@ public class AddressService {
         // 2. Gán đối tượng User cho Address
         address.setUser(user);
 
+        // 3. Kiểm tra địa chỉ trùng lặp
+        boolean exists = addressRepository.findByUserIdOrderByIsDefaultDesc(user.getId()).stream()
+            .anyMatch(a -> a.getAddress().equalsIgnoreCase(address.getAddress()) && 
+                           a.getPhone().equals(address.getPhone()) && 
+                           a.getFullName().equalsIgnoreCase(address.getFullName()));
+        if (exists) {
+            throw new IllegalArgumentException("Địa chỉ nhận hàng đã tồn tại");
+        }
+
         
         long existingAddressCount = addressRepository.countByUserId(user.getId()); 
 
@@ -82,6 +91,16 @@ public class AddressService {
         existing.setFullName(addressData.getFullName());
         existing.setPhone(addressData.getPhone());
         existing.setAddress(addressData.getAddress());
+
+        // Kiểm tra địa chỉ trùng lặp với các địa chỉ KHÁC
+        boolean exists = addressRepository.findByUserIdOrderByIsDefaultDesc(user.getId()).stream()
+            .anyMatch(a -> !a.getAddressId().equals(id) &&
+                           a.getAddress().equalsIgnoreCase(addressData.getAddress()) && 
+                           a.getPhone().equals(addressData.getPhone()) && 
+                           a.getFullName().equalsIgnoreCase(addressData.getFullName()));
+        if (exists) {
+            throw new IllegalArgumentException("Địa chỉ nhận hàng đã tồn tại");
+        }
 
         Boolean requestedIsDefault = addressData.getIsDefault();
 
@@ -139,5 +158,27 @@ public class AddressService {
             }).orElse(null);
         }
         return null; // Return null if user not found or address not found/mismatch
+    }
+
+    @Transactional
+    public void deleteAddress(Long addressId, String username) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found: " + username);
+        }
+
+        Address address = addressRepository.findById(addressId)
+            .filter(a -> a.getUser().getId().equals(user.getId()))
+            .orElseThrow(() -> new EntityNotFoundException("Address not found or unauthorized"));
+
+        boolean wasDefault = Boolean.TRUE.equals(address.getIsDefault());
+        addressRepository.delete(address);
+
+        if (wasDefault) {
+            addressRepository.findFirstByUserIdAndAddressIdNot(user.getId(), addressId).ifPresent(newDefault -> {
+                newDefault.setIsDefault(true);
+                addressRepository.save(newDefault);
+            });
+        }
     }
 }

@@ -192,16 +192,16 @@
                         <div class="mb-3 rating-row">
                             <label class="form-label">Đánh giá (1-5 sao)</label>
                             <div class="star-rating">
-                                <input type="radio" id="star5_${reviewInfo.product.productId}" name="rating" value="5" required>
-                                <label for="star5_${reviewInfo.product.productId}" class="fas fa-star"></label>
-                                <input type="radio" id="star4_${reviewInfo.product.productId}" name="rating" value="4">
-                                <label for="star4_${reviewInfo.product.productId}" class="fas fa-star"></label>
-                                <input type="radio" id="star3_${reviewInfo.product.productId}" name="rating" value="3">
-                                <label for="star3_${reviewInfo.product.productId}" class="fas fa-star"></label>
-                                <input type="radio" id="star2_${reviewInfo.product.productId}" name="rating" value="2">
-                                <label for="star2_${reviewInfo.product.productId}" class="fas fa-star"></label>
-                                <input type="radio" id="star1_${reviewInfo.product.productId}" name="rating" value="1">
-                                <label for="star1_${reviewInfo.product.productId}" class="fas fa-star"></label>
+                                <input type="radio" th:id="'star5_' + ${reviewInfo.product.productId}" name="rating" value="5">
+                                <label th:for="'star5_' + ${reviewInfo.product.productId}" class="fas fa-star"></label>
+                                <input type="radio" th:id="'star4_' + ${reviewInfo.product.productId}" name="rating" value="4">
+                                <label th:for="'star4_' + ${reviewInfo.product.productId}" class="fas fa-star"></label>
+                                <input type="radio" th:id="'star3_' + ${reviewInfo.product.productId}" name="rating" value="3">
+                                <label th:for="'star3_' + ${reviewInfo.product.productId}" class="fas fa-star"></label>
+                                <input type="radio" th:id="'star2_' + ${reviewInfo.product.productId}" name="rating" value="2">
+                                <label th:for="'star2_' + ${reviewInfo.product.productId}" class="fas fa-star"></label>
+                                <input type="radio" th:id="'star1_' + ${reviewInfo.product.productId}" name="rating" value="1">
+                                <label th:for="'star1_' + ${reviewInfo.product.productId}" class="fas fa-star"></label>
                             </div>
                         </div>
 

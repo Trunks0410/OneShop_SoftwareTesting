@@ -39,8 +39,12 @@ public class AddressController {
         }
         Address address = addressDTO.toEntity();
         String username = authentication.getName();
-        Address savedAddress = addressService.save(address, username);
-        return ResponseEntity.ok(new AddressDTO(savedAddress));
+        try {
+            Address savedAddress = addressService.save(address, username);
+            return ResponseEntity.ok(new AddressDTO(savedAddress));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
@@ -62,6 +66,8 @@ public class AddressController {
             return ResponseEntity.ok(updatedAddress);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
         }
     }
 }

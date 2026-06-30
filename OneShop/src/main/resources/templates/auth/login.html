@@ -39,8 +39,8 @@
     <div class="auth-right">
         <h3>Đăng nhập</h3>
 
-        <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            Tên đăng nhập hoặc mật khẩu không đúng.
+        <div th:if="${param.error != null}" class="alert alert-danger" role="alert">
+            <span th:text="${#strings.equals(param.error[0], 'disabled') ? 'Tài khoản chưa được kích hoạt' : 'Tên đăng nhập hoặc mật khẩu không đúng.'}"></span>
         </div>
         <div th:if="${param.logout}" class="alert alert-info" role="alert">
             Bạn đã đăng xuất.

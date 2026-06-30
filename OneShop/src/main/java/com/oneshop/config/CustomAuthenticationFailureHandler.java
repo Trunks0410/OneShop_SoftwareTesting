@@ -1,16 +1,17 @@
-package com.oneshop.config; // (Hoặc package config của bạn)
+package com.oneshop.config;
 
 import java.io.IOException;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.stereotype.Component; // <-- Rất quan trọng
+import org.springframework.stereotype.Component;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component // <-- Đánh dấu đây là một Bean
+@Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     @Override
@@ -19,13 +20,20 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                                         AuthenticationException exception) 
             throws IOException, ServletException {
         
-        // Đây là logic bạn đã viết (lấy từ inner class cũ)
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\": false, \"message\": \"Tài khoản hoặc mật khẩu không chính xác!\"}");
+            response.setContentType("application/json;charset=UTF-8");
+            if (exception instanceof DisabledException) {
+                response.getWriter().write("{\"success\": false, \"message\": \"Tài khoản chưa được kích hoạt\"}");
+            } else {
+                response.getWriter().write("{\"success\": false, \"message\": \"Tài khoản hoặc mật khẩu không chính xác!\"}");
+            }
         } else {
-            response.sendRedirect("/login?error=true");
+            if (exception instanceof DisabledException) {
+                response.sendRedirect("/login?error=disabled");
+            } else {
+                response.sendRedirect("/login?error=true");
+            }
         }
     }
 }
